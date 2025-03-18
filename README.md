@@ -36,7 +36,49 @@ A RESTful API developed using Node.js, HTML and SQLlite that handles concurrent 
 ![image](https://github.com/user-attachments/assets/93b7af19-f360-494e-9ad7-aa20f7f8ad06)
 
 
+# Task 2.2 Explanations
 
+# 2.2 a)
+
+Database schema:
+   - ID_Transactions - Primary Key
+   - ID_Account - Foreign Key (REFERENCES accounts(...))
+   - Type (debit/credit)
+   - Amount
+   - Timestamp
+   - Commit (bool if went through or not)
+
+Each transaction will be linked to an accounts table with ID_Account as primary key and other fields like Acc_Balance etc.
+
+# 2.2 b)
+
+To ensure consistency:
+
+-- Commit only when a transaction is completed.
+
+-- Checkpointing with timestamps
+
+-- Replicate database by storing multiple copies
+
+# 2.2 c)
+
+Optimizations for high performance:
+
+-- Use big-data databases like Snowflake
+
+-- Use meta-data management
+
+-- Cache important data (if a user is doing multiple transactions)
+
+-- Rate-limiting to prevent overload
+
+-- Parallel processing and load-balancing with batch processing
+
+-- Optimize queries with AI-API Calls
+
+-- Secure interfaces to prevent data-leak
+
+# Task 3 - Incorporated in Transactions.js
 
 
 
