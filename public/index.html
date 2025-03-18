@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banking API Interface</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        h2 {
+            color: #666;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+        }
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f8f8;
+        }
+        .refresh-btn {
+            background-color: #5bc0de;
+            margin-bottom: 10px;
+        }
+        .refresh-btn:hover {
+            background-color: #46b8da;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Banking API Interface</h1>
+
+        <div class="section">
+            <h2>Create New Account</h2>
+            <div class="form-group">
+                <label for="customer-name">Customer Name:</label>
+                <input type="text" id="customer-name" placeholder="Enter customer name">
+                <label for="initial-balance">Initial Balance:</label>
+                <input type="number" id="initial-balance" placeholder="Enter initial balance" value="0">
+                <button onclick="createAccount()">Create Account</button>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>All Accounts</h2>
+            <button class="refresh-btn" onclick="loadAccounts()">Refresh Account List</button>
+            <table id="accounts-table">
+                <thead>
+                    <tr>
+                        <th>Account ID</th>
+                        <th>Customer Name</th>
+                        <th>Balance</th>
+                    </tr>
+                </thead>
+                <tbody id="accounts-list">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Check Balance</h2>
+            <div class="form-group">
+                <label for="balance-account-id">Account ID:</label>
+                <input type="text" id="balance-account-id" placeholder="Enter account ID">
+                <button onclick="checkBalance()">Check Balance</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Credit Amount</h2>
+            <div class="form-group">
+                <label for="credit-account-id">Account ID:</label>
+                <input type="text" id="credit-account-id" placeholder="Enter account ID">
+                <label for="credit-amount">Amount:</label>
+                <input type="number" id="credit-amount" placeholder="Enter amount">
+                <button onclick="creditAmount()">Credit</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Debit Amount</h2>
+            <div class="form-group">
+                <label for="debit-account-id">Account ID:</label>
+                <input type="text" id="debit-account-id" placeholder="Enter account ID">
+                <label for="debit-amount">Amount:</label>
+                <input type="number" id="debit-amount" placeholder="Enter amount">
+                <button onclick="debitAmount()">Debit</button>
+            </div>
+        </div>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Load accounts when page loads
+        window.onload = loadAccounts;
+
+        function showResult(message, isError = false) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = message;
+            resultDiv.className = isError ? 'error' : 'success';
+        }
+
+        async function loadAccounts() {
+            try {
+                const response = await fetch('/accounts');
+                const accounts = await response.json();
+                
+                const tbody = document.getElementById('accounts-list');
+                tbody.innerHTML = '';
+                
+                accounts.forEach(account => {
+                    const row = tbody.insertRow();
+                    row.insertCell(0).textContent = account.account_id;
+                    row.insertCell(1).textContent = account.customer_name;
+                    row.insertCell(2).textContent = `$${account.balance}`;
+                });
+            } catch (error) {
+                showResult('Error loading accounts', true);
+            }
+        }
+
+        async function createAccount() {
+            const customerName = document.getElementById('customer-name').value;
+            const initialBalance = document.getElementById('initial-balance').value;
+            
+            if (!customerName) {
+                showResult('Customer name is required', true);
+                return;
+            }
+
+            try {
+                const response = await fetch('/accounts/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        customer_name: customerName,
+                        initial_balance: parseFloat(initialBalance) || 0
+                    }),
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    showResult(`Account created successfully. Account ID: ${data.account_id}`);
+                    document.getElementById('customer-name').value = '';
+                    document.getElementById('initial-balance').value = '0';
+                    loadAccounts(); // Refresh the accounts list
+                } else {
+                    showResult(data.error, true);
+                }
+            } catch (error) {
+                showResult('Error creating account', true);
+            }
+        }
+
+        async function checkBalance() {
+            const accountId = document.getElementById('balance-account-id').value;
+            try {
+                const response = await fetch(`/accounts/${accountId}/balance`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult(`Balance for account ${data.account_id}: $${data.balance}`);
+                } else {
+                    showResult(data.error, true);
+                }
+            } catch (error) {
+                showResult('Error checking balance', true);
+            }
+        }
+
+        async function creditAmount() {
+            const accountId = document.getElementById('credit-account-id').value;
+            const amount = document.getElementById('credit-amount').value;
+            
+            try {
+                const response = await fetch('/transactions/credit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ account_id: accountId, amount: parseFloat(amount) }),
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    showResult(`Credit successful. New balance: $${data.new_balance}`);
+                    loadAccounts(); // Refresh the accounts list
+                } else {
+                    showResult(data.error, true);
+                }
+            } catch (error) {
+                showResult('Error processing credit', true);
+            }
+        }
+
+        async function debitAmount() {
+            const accountId = document.getElementById('debit-account-id').value;
+            const amount = document.getElementById('debit-amount').value;
+            
+            try {
+                const response = await fetch('/transactions/debit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ account_id: accountId, amount: parseFloat(amount) }),
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    showResult(`Debit successful. New balance: $${data.new_balance}`);
+                    loadAccounts(); // Refresh the accounts list
+                } else {
+                    showResult(data.error, true);
+                }
+            } catch (error) {
+                showResult('Error processing debit', true);
+            }
+        }
+    </script>
+</body>
+</html> 
