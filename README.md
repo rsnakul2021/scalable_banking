@@ -1,6 +1,4 @@
-# ZetaAssn Question 3
-
-# Summary of Task
+# Full stack Banking App
 A RESTful API developed using Node.js, HTML and SQLlite that handles concurrent banking transactions - Debit, Credit, Creating new account and checking balance. The task handles atomicity and concurrency control. Supports banking transactions and throws error messages when transactions are inconsistent.
 
 # How to run?
@@ -36,9 +34,7 @@ A RESTful API developed using Node.js, HTML and SQLlite that handles concurrent 
 ![image](https://github.com/user-attachments/assets/93b7af19-f360-494e-9ad7-aa20f7f8ad06)
 
 
-# Task 2.2 Explanations
-
-# 2.2 a)
+# Schema
 
 Database schema:
    - ID_Transactions - Primary Key
@@ -49,36 +45,5 @@ Database schema:
    - Commit (bool if went through or not)
 
 Each transaction will be linked to an accounts table with ID_Account as primary key and other fields like Acc_Balance etc.
-
-# 2.2 b)
-
-To ensure consistency:
-
--- Commit only when a transaction is completed.
-
--- Checkpointing with timestamps
-
--- Replicate database by storing multiple copies
-
-# 2.2 c)
-
-Optimizations for high performance:
-
--- Use big-data databases like Snowflake
-
--- Use meta-data management
-
--- Cache important data (if a user is doing multiple transactions)
-
--- Rate-limiting to prevent overload
-
--- Parallel processing and load-balancing with batch processing
-
--- Optimize queries with AI-API Calls
-
--- Secure interfaces to prevent data-leak
-
-# Task 3 - Incorporated in Transactions.js
-
 
 
